@@ -2,6 +2,7 @@
 
 import numpy as np 
 import pandas as pd 
+import matplotlib.pyplot as plt
 import yfinance as yf
 import tensorflow as tf
 from tensorflow.keras.models import load_model
@@ -50,6 +51,34 @@ data_test = pd.concat([past_100_days, data_test_df], ignore_index=True)
 data_test_scale = scaler.fit_transform(data_test_df)
 
 
+# ploting MA's and Prices
+st.subheader('MA50')
+ma_50_days = data.Close.rolling(50).mean()
+fig1 = plt.figure(figsize=(10,8))
+plt.plot(ma_50_days, 'r')
+plt.plot(data.Close, 'g')
+plt.show()
+st.pyplot(fig1)
+
+
+st.subheader('Price vs MA50 vs MA100')
+ma_100_days = data.Close.rolling(100).mean()
+fig2 = plt.figure(figsize=(8,6))
+plt.plot(ma_50_days, 'r')
+plt.plot(ma_100_days, 'b')
+plt.plot(data.Close, 'g')
+plt.show()
+st.pyplot(fig2)
+
+st.subheader('Price vs MA100 vs MA200')
+ma_200_days = data.Close.rolling(200).mean()
+fig3 = plt.figure(figsize=(8,6))
+plt.plot(ma_100_days, 'r')
+plt.plot(ma_200_days, 'b')
+plt.plot(data.Close, 'g')
+plt.show()
+st.pyplot(fig3)
+
 
 x = []
 y = []
@@ -60,3 +89,22 @@ for i in range (100, data_test_scale.shape[0]):
 
 x = np.array(x)
 y = np.array(y)
+
+
+predict = model.predict(x)
+
+scale = 1/scaler.scale_
+
+predict = predict * scale
+
+y = y * scale
+
+# Plotting Price and Prediction
+st.subheader('Original Price vs Predicted Price')
+fig4 = plt.figure(figsize=(8,6))
+plt.plot(predict, 'r', label='Original Price')
+plt.plot(y, 'b', label='Predicted Price')
+plt.xlabel('Time')
+plt.ylabel('Price')
+plt.show()
+st.pyplot(fig4)
